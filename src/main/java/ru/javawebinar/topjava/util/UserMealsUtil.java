@@ -27,6 +27,7 @@ public class UserMealsUtil {
 
         List<UserMealWithExcess> mealsSt = filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
         mealsSt.forEach(System.out::println);
+
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {

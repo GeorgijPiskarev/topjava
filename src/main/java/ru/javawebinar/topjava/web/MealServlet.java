@@ -45,9 +45,8 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("redirect to updateMeal");
         request.setCharacterEncoding("UTF-8");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
-        Meal meal = new Meal(LocalDateTime.parse(request.getParameter("dateTime"), formatter),
+        Meal meal = new Meal(LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"), Integer.parseInt(request.getParameter("calories")));
         try {
             int id = Integer.parseInt(request.getParameter("id"));

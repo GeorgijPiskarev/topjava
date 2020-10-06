@@ -14,7 +14,7 @@ public class HashMapMealDao implements MealDao {
     private final Map<Integer, Meal> listOfMeal = new ConcurrentHashMap<>();
     private final AtomicInteger count = new AtomicInteger(0);
 
-    public HashMapMealDao(){
+    public HashMapMealDao() {
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
         create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
@@ -38,10 +38,7 @@ public class HashMapMealDao implements MealDao {
 
     @Override
     public Meal edit(Meal meal) {
-        if(listOfMeal.containsKey(meal.getId())) {
-            listOfMeal.put(meal.getId(), meal);
-        }
-        return meal;
+        return listOfMeal.replace(meal.getId(), meal) == null ? null : meal;
     }
 
     @Override

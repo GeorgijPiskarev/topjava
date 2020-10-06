@@ -21,8 +21,7 @@ public class MealServlet extends HttpServlet {
     private MealDao mealDao;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init() {
         mealDao = new HashMapMealDao();
     }
 
@@ -33,12 +32,12 @@ public class MealServlet extends HttpServlet {
         action = action == null ? "" : action;
         switch (action) {
             case ("edit"):
-                request.setAttribute("meal", mealDao.getById(MealsUtil.convertToNumber(request,"id")));
+                request.setAttribute("meal", mealDao.getById(convertToNumber(request, "id")));
                 request.getRequestDispatcher("updateMeal.jsp").forward(request, response);
                 break;
             case ("delete"):
                 log.debug("delete meal");
-                mealDao.delete(MealsUtil.convertToNumber(request,"id"));
+                mealDao.delete(convertToNumber(request, "id"));
                 response.sendRedirect("meals");
                 return;
             case ("add"):
@@ -59,15 +58,19 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"), Integer.parseInt(request.getParameter("calories")));
 
-        if(!request.getParameter("id").isEmpty()){
+        if (!request.getParameter("id").isEmpty()) {
             log.debug("edit meal");
-            meal.setId(MealsUtil.convertToNumber(request,"id"));
+            meal.setId(convertToNumber(request, "id"));
             mealDao.edit(meal);
-        }else {
+        } else {
             log.debug("create meal");
             mealDao.create(meal);
         }
 
         response.sendRedirect("meals");
+    }
+
+    public static int convertToNumber(HttpServletRequest request, String id) {
+        return Integer.parseInt(request.getParameter(id));
     }
 }

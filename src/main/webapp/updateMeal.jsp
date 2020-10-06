@@ -1,6 +1,7 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://sargue.net/jsptags/time" prefix="javatime" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="javatime" uri="http://sargue.net/jsptags/time" %>
+
 <html>
 <head>
     <title>Edit Meal</title>
@@ -40,13 +41,13 @@
     <br>
     <p>
         <label for="calories">Calories:</label>
-        <input type="number" id="calories" name="calories" value="${meal.calories}"/>
+        <input id="calories" type="number" name="calories" value="${meal.calories}"/>
     </p>
     <br>
     <p>
         <input type="submit" value="Save">
         <a href="meals">
-            <button class="swd-button">Cancel</button>
+            <button type="button">Cancel</button>
         </a>
     </p>
 </form>

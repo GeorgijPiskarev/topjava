@@ -1,14 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://sargue.net/jsptags/time" prefix="javatime" %>
+<%@ taglib prefix="javatime" uri="http://sargue.net/jsptags/time" %>
 
 <html>
 <head>
     <title>Meals</title>
     <style>
-        table{
+        table {
             border-collapse: collapse;
         }
+
         td, th {
             padding: 5px;
             border: 2px solid #5f5c5c;
@@ -19,7 +20,7 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
-<h4><a href="updateMeal.jsp">Add Meal</a> </h4>
+<h4><a href="meals?action=add">Add Meal</a></h4>
 <table>
     <tr>
         <th>Date</th>

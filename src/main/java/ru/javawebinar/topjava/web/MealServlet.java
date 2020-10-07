@@ -32,12 +32,12 @@ public class MealServlet extends HttpServlet {
         action = action == null ? "" : action;
         switch (action) {
             case ("edit"):
-                request.setAttribute("meal", mealDao.getById(convertToNumber(request, "id")));
+                request.setAttribute("meal", mealDao.getById(convertToNumber(request)));
                 request.getRequestDispatcher("updateMeal.jsp").forward(request, response);
                 break;
             case ("delete"):
                 log.debug("delete meal");
-                mealDao.delete(convertToNumber(request, "id"));
+                mealDao.delete(convertToNumber(request));
                 response.sendRedirect("meals");
                 return;
             case ("add"):
@@ -60,7 +60,7 @@ public class MealServlet extends HttpServlet {
 
         if (!request.getParameter("id").isEmpty()) {
             log.debug("edit meal");
-            meal.setId(convertToNumber(request, "id"));
+            meal.setId(convertToNumber(request));
             mealDao.edit(meal);
         } else {
             log.debug("create meal");
@@ -70,7 +70,7 @@ public class MealServlet extends HttpServlet {
         response.sendRedirect("meals");
     }
 
-    public static int convertToNumber(HttpServletRequest request, String id) {
-        return Integer.parseInt(request.getParameter(id));
+    private static int convertToNumber(HttpServletRequest request) {
+        return Integer.parseInt(request.getParameter("id"));
     }
 }

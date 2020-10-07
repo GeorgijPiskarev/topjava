@@ -70,7 +70,7 @@ public class MealServlet extends HttpServlet {
         response.sendRedirect("meals");
     }
 
-    private static int convertToNumber(HttpServletRequest request) {
+    private int convertToNumber(HttpServletRequest request) {
         return Integer.parseInt(request.getParameter("id"));
     }
 }

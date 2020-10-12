@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -25,7 +25,7 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("save {}", meal);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.computeIfAbsent(userId, m -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
+            repository.computeIfAbsent(userId, m -> new HashMap<>()).put(meal.getId(), meal);
             return meal;
         }
         // handle case: update, but not present in storage
@@ -55,18 +55,27 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
+    public List<Meal> getFilteredList(LocalDate startDate, LocalDate endDate, int userId) {
+        return getAll(userId)
+                .stream()
+                .filter(meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Meal> getAll(int userId) {
         log.info("getAll with userId {}", userId);
         List<Meal> meals = new ArrayList<>();
         if (repository.get(userId) != null) {
             meals = new ArrayList<>(repository.get(userId).values());
-            meals.sort((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()));
+            meals.sort(Collections.reverseOrder(Comparator.comparing(Meal::getDateTime)));
         }
         return meals;
     }
 
     private boolean isExists(int id, int userId) {
-        return repository.get(userId) != null && repository.get(userId).get(id) != null;
+        Map<Integer, Meal> mealMap = repository.get(userId);
+        return mealMap != null && mealMap.get(id) != null;
     }
 }
 

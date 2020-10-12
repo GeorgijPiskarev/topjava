@@ -21,6 +21,27 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+    <form method="get" action="meals">
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+            <tr>
+                <th>From date</th>
+                <th>To date</th>
+                <th>From time</th>
+                <th>To time</th>
+            </tr>
+            </thead>
+            <tr>
+                <td><input type="date" name="fromDate"></td>
+                <td><input type="date" name="toDate"></td>
+                <td><input type="time" name="fromTime"></td>
+                <td><input type="time" name="toTime"></td>
+            </tr>
+        </table>
+        <br>
+        <button type="submit">Filter</button>
+    </form>
+    <br>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">

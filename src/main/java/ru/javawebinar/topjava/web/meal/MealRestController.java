@@ -9,6 +9,8 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -22,8 +24,10 @@ public class MealRestController {
 
     public MealRestController(MealService service) {
         this.service = service;
-        MealsUtil.meals.forEach(meal -> {
+        MealsUtil.meals1.forEach(meal -> {
             service.create(meal, 1);
+        });
+        MealsUtil.meals2.forEach(meal -> {
             service.create(meal, 2);
         });
     }
@@ -44,6 +48,16 @@ public class MealRestController {
         service.update(meal, authUserId());
     }
 
+    public List<MealTo> getFilteredList(String startDate, String endDate, String startTime, String endTime) {
+        LocalDate sDate = startDate == null || startDate.isEmpty() ? LocalDate.MIN : LocalDate.parse(startDate);
+        LocalDate eDate = endDate == null || endDate.isEmpty() ? LocalDate.MAX : LocalDate.parse(endDate);
+        LocalTime sTime = startTime == null || startTime.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTime);
+        LocalTime eTime = endTime == null || endTime.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTime);
+
+        return MealsUtil.getFilteredTos(service.getFilteredList(sDate, eDate, SecurityUtil.authUserId()),
+                SecurityUtil.authUserCaloriesPerDay(), sTime, eTime);
+    }
+
     public List<MealTo> getAll() {
         log.info("getAll");
         return MealsUtil.getTos(service.getAll(authUserId()), SecurityUtil.authUserCaloriesPerDay());
@@ -54,5 +68,4 @@ public class MealRestController {
         checkNew(meal);
         return service.create(meal, authUserId());
     }
-
 }

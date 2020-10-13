@@ -24,12 +24,8 @@ public class MealRestController {
 
     public MealRestController(MealService service) {
         this.service = service;
-        MealsUtil.meals1.forEach(meal -> {
-            service.create(meal, 1);
-        });
-        MealsUtil.meals2.forEach(meal -> {
-            service.create(meal, 2);
-        });
+        MealsUtil.meals1.forEach(meal -> service.create(meal, 1));
+        MealsUtil.meals2.forEach(meal -> service.create(meal, 2));
     }
 
     public Meal get(int id) {

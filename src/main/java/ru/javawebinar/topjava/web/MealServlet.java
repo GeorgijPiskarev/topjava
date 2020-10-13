@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -13,7 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -76,11 +79,8 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", controller.getFilteredList(
-                        request.getParameter("fromDate"),
-                        request.getParameter("toDate"),
-                        request.getParameter("fromTime"),
-                        request.getParameter("toTime")));
+                request.setAttribute("meals", controller.getFilteredList(getDate(request, "fromDate"),
+                        getDate(request, "toDate"), getTime(request, "fromTime"), getTime(request, "toTime")));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
@@ -89,5 +89,13 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate getDate(HttpServletRequest request, String parameter) {
+        return StringUtils.isEmpty(request.getParameter(parameter)) ? null : LocalDate.parse(request.getParameter(parameter));
+    }
+
+    private LocalTime getTime(HttpServletRequest request, String parameter) {
+        return StringUtils.isEmpty(request.getParameter(parameter)) ? null : LocalTime.parse(request.getParameter(parameter));
     }
 }

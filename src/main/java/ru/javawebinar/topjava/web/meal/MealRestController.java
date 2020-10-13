@@ -48,11 +48,12 @@ public class MealRestController {
         service.update(meal, authUserId());
     }
 
-    public List<MealTo> getFilteredList(String startDate, String endDate, String startTime, String endTime) {
-        LocalDate sDate = startDate == null || startDate.isEmpty() ? LocalDate.MIN : LocalDate.parse(startDate);
-        LocalDate eDate = endDate == null || endDate.isEmpty() ? LocalDate.MAX : LocalDate.parse(endDate);
-        LocalTime sTime = startTime == null || startTime.isEmpty() ? LocalTime.MIN : LocalTime.parse(startTime);
-        LocalTime eTime = endTime == null || endTime.isEmpty() ? LocalTime.MAX : LocalTime.parse(endTime);
+    public List<MealTo> getFilteredList(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        log.info("getFilteredList");
+        LocalDate sDate = startDate == null ? LocalDate.MIN : startDate;
+        LocalDate eDate = endDate == null ? LocalDate.MAX : endDate;
+        LocalTime sTime = startTime == null ? LocalTime.MIN : startTime;
+        LocalTime eTime = endTime == null ? LocalTime.MAX : endTime;
 
         return MealsUtil.getFilteredTos(service.getFilteredList(sDate, eDate, SecurityUtil.authUserId()),
                 SecurityUtil.authUserCaloriesPerDay(), sTime, eTime);

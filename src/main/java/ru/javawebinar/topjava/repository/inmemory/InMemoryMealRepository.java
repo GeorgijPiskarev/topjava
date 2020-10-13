@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -25,57 +26,49 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("save {}", meal);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            repository.computeIfAbsent(userId, m -> new HashMap<>()).put(meal.getId(), meal);
+            getMap(userId).put(meal.getId(), meal);
             return meal;
         }
         // handle case: update, but not present in storage
-        if (isExists(meal.getId(), userId)) {
-            return repository.get(userId).put(meal.getId(), meal);
-        }
-        return null;
+        return getMap(userId).computeIfPresent(meal.getId(), (id, m) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
         log.info("delete {}", id);
-        if (isExists(id, userId)) {
-            repository.get(userId).remove(id);
-            return true;
-        }
-        return false;
+        return getMap(userId).remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
         log.info("get {}", id);
-        if (isExists(id, userId)) {
-            return repository.get(userId).get(id);
-        }
-        return null;
+        return getMap(userId).get(id);
+    }
+
+    public List<Meal> getFiltered(Predicate<Meal> filter, int userId) {
+        log.info("getFiltered with userId {}", userId);
+        return repository.get(userId)
+                .values()
+                .stream()
+                .filter(filter)
+                .sorted(Collections.reverseOrder(Comparator.comparing(Meal::getDateTime)))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Meal> getFilteredList(LocalDate startDate, LocalDate endDate, int userId) {
-        return getAll(userId)
-                .stream()
-                .filter(meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate))
-                .collect(Collectors.toList());
+        log.info("getFilteredList with userId {}", userId);
+        return getFiltered(meal -> DateTimeUtil.isBetweenDays(meal.getDate(), startDate, endDate), userId);
     }
 
     @Override
     public List<Meal> getAll(int userId) {
         log.info("getAll with userId {}", userId);
-        List<Meal> meals = new ArrayList<>();
-        if (repository.get(userId) != null) {
-            meals = new ArrayList<>(repository.get(userId).values());
-            meals.sort(Collections.reverseOrder(Comparator.comparing(Meal::getDateTime)));
-        }
-        return meals;
+        return getFiltered(meal -> true, userId);
     }
 
-    private boolean isExists(int id, int userId) {
-        Map<Integer, Meal> mealMap = repository.get(userId);
-        return mealMap != null && mealMap.get(id) != null;
+    private Map<Integer, Meal> getMap(int userId) {
+        return repository.computeIfAbsent(userId, m -> new HashMap<>());
     }
 }
 

@@ -32,10 +32,10 @@
             </tr>
             </thead>
             <tr>
-                <td><input type="date" name="fromDate"></td>
-                <td><input type="date" name="toDate"></td>
-                <td><input type="time" name="fromTime"></td>
-                <td><input type="time" name="toTime"></td>
+                <td><input type="date" value="${param.fromDate}" name="fromDate"></td>
+                <td><input type="date" value="${param.toDate}" name="toDate"></td>
+                <td><input type="time" value="${param.fromTime}" name="fromTime"></td>
+                <td><input type="time" value="${param.toTime}" name="toTime"></td>
             </tr>
         </table>
         <br>

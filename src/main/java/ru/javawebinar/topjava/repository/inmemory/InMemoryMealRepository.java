@@ -24,35 +24,39 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal, int userId) {
         log.info("save {}", meal);
+        Map<Integer,Meal> meals = repository.computeIfAbsent(userId, m -> new HashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            getMap(userId).put(meal.getId(), meal);
+            meals.put(meal.getId(),meal);
             return meal;
         }
         // handle case: update, but not present in storage
-        return getMap(userId).computeIfPresent(meal.getId(), (id, m) -> meal);
+        return meals.computeIfPresent(meal.getId(), (id, m) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
         log.info("delete {}", id);
-        return getMap(userId).remove(id) != null;
+        Map<Integer, Meal> meals = repository.get(userId);
+        return meals.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
         log.info("get {}", id);
-        return getMap(userId).get(id);
+        Map<Integer, Meal> meals = repository.get(userId);
+        return meals != null ? meals.get(id) : null;
     }
 
     public List<Meal> getFiltered(Predicate<Meal> filter, int userId) {
         log.info("getFiltered with userId {}", userId);
-        return repository.get(userId)
+        Map<Integer, Meal> meals = repository.get(userId);
+        return meals != null ? meals
                 .values()
                 .stream()
                 .filter(filter)
                 .sorted(Collections.reverseOrder(Comparator.comparing(Meal::getDateTime)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : Collections.emptyList();
     }
 
     @Override
@@ -65,10 +69,6 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getAll(int userId) {
         log.info("getAll with userId {}", userId);
         return getFiltered(meal -> true, userId);
-    }
-
-    private Map<Integer, Meal> getMap(int userId) {
-        return repository.computeIfAbsent(userId, m -> new HashMap<>());
     }
 }
 

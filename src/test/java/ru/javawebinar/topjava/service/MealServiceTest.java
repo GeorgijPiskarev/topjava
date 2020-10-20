@@ -80,20 +80,20 @@ public class MealServiceTest extends TestCase {
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, USER_MEALS);
+        assertMatch(all, userMeals);
     }
 
     @Test
     public void update() {
         Meal updated = getUpdated();
-        service.update(updated, USER_ID);
-        assertMatch(service.get(updated.getId(), USER_ID), updated);
+        service.update(getUpdated(), USER_ID);
+        assertMatch(service.get(USER_MEAL_ID, USER_ID), updated);
     }
 
     @Test
     public void create() {
         Meal newMeal = getNew();
-        Meal created = service.create(newMeal, USER_ID);
+        Meal created = service.create(getNew(), USER_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
         assertMatch(created, newMeal);
@@ -104,5 +104,25 @@ public class MealServiceTest extends TestCase {
     public void duplicateDateTimeCreate() {
         assertThrows(DataAccessException.class, () -> service.create(new Meal(userMeal2.getDateTime(),
                 "description", 300), USER_ID));
+    }
+
+    @Test
+    public void deleteNonExistentMeal() {
+        assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
+    }
+
+    @Test
+    public void getNonExistentMeal() {
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
+    }
+
+    public void getBetweenInclusiveWithNullValues() {
+        assertMatch(service.getBetweenInclusive(null, null, USER_ID),
+                userMeal4,
+                userMeal3,
+                userMeal2,
+                userMeal5,
+                userMeal6,
+                userMeal7);
     }
 }

@@ -116,13 +116,14 @@ public class MealServiceTest extends TestCase {
         assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
     }
 
+    @Test
     public void getBetweenInclusiveWithNullValues() {
         assertMatch(service.getBetweenInclusive(null, null, USER_ID),
+                userMeal7,
+                userMeal6,
                 userMeal4,
                 userMeal3,
                 userMeal2,
-                userMeal5,
-                userMeal6,
-                userMeal7);
+                userMeal5);
     }
 }

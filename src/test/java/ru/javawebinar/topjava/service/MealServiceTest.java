@@ -15,7 +15,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -70,17 +69,16 @@ public class MealServiceTest extends TestCase {
     public void testGetBetweenInclusive() {
         assertMatch(service.getBetweenInclusive(LocalDate.of(2020, Month.MAY, 20),
                 LocalDate.of(2020, Month.MAY, 20), USER_ID),
-                userMeals.get(3),
-                userMeals.get(2),
-                userMeals.get(1),
-                userMeals.get(0));
+                USER_MEAL_4,
+                USER_MEAL_3,
+                USER_MEAL_2,
+                USER_MEAL_5);
     }
 
     @Test
     public void testGetAll() {
         List<Meal> all = service.getAll(USER_ID);
-        all.sort(Comparator.comparing(Meal::getDateTime));
-        assertMatch(all, userMeals);
+        assertMatch(all, USER_MEALS);
     }
 
     @Test
@@ -102,7 +100,7 @@ public class MealServiceTest extends TestCase {
 
     @Test
     public void duplicateDateTimeCreate() {
-        assertThrows(DataAccessException.class, () -> service.create(new Meal(userMeals.get(0).getDateTime(),
+        assertThrows(DataAccessException.class, () -> service.create(new Meal(USER_MEAL_2.getDateTime(),
                 "description", 300), USER_ID));
     }
 }

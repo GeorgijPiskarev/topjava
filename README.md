@@ -1,4 +1,5 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ad0ed9061e042aa85f44a86d387025c)](https://www.codacy.com/gh/GeorgijPiskarev/topjava/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=GeorgijPiskarev/topjava&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/GeorgijPiskarev/topjava.svg?branch=master)](https://travis-ci.org/GeorgijPiskarev/topjava)
 
 Java Enterprise Online Project 
 ===============================

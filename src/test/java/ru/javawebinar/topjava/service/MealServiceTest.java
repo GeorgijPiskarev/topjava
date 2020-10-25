@@ -1,7 +1,13 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,8 +18,10 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -26,6 +34,34 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final StringBuilder builder = new StringBuilder();
+
+    @Rule
+    public TestWatcher watcher = new TestWatcher() {
+        LocalTime methodTime;
+
+        @Override
+        protected void starting(Description description) {
+            methodTime = LocalTime.now();
+        }
+
+        @Override
+        protected void finished(Description description) {
+            long ms = MILLIS.between(methodTime, LocalTime.now());
+            log.info("Test time {} = {} ms", description.getMethodName(), ms);
+            builder.append("Test time ").append(description.getMethodName())
+                    .append(" = ").append(ms).append(" ms").append(System.lineSeparator());
+        }
+    };
+
+    @AfterClass
+    public static void after() {
+        log.info(System.lineSeparator()
+                + "--------------------------------------------"
+                + System.lineSeparator() + builder.toString()
+                + "--------------------------------------------");
+    }
 
     @Autowired
     private MealService service;

@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.service;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -18,10 +18,9 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
-import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -38,20 +37,13 @@ public class MealServiceTest {
     private static final StringBuilder builder = new StringBuilder();
 
     @Rule
-    public TestWatcher watcher = new TestWatcher() {
-        LocalTime methodTime;
+    public Stopwatch stopwatch = new Stopwatch() {
 
         @Override
-        protected void starting(Description description) {
-            methodTime = LocalTime.now();
-        }
-
-        @Override
-        protected void finished(Description description) {
-            long ms = MILLIS.between(methodTime, LocalTime.now());
+        protected void finished(long nanos, Description description) {
+            long ms = TimeUnit.NANOSECONDS.toMillis(nanos);
             log.info("Test time {} = {} ms", description.getMethodName(), ms);
-            builder.append("Test time ").append(description.getMethodName())
-                    .append(" = ").append(ms).append(" ms").append(System.lineSeparator());
+            builder.append(String.format("  %-25s- %d ms", description.getMethodName(), ms)).append(System.lineSeparator());
         }
     };
 

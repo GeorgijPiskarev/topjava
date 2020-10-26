@@ -36,6 +36,9 @@ public class MealServiceTest {
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
     private static final StringBuilder builder = new StringBuilder();
 
+    @Autowired
+    private MealService service;
+
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
 
@@ -54,9 +57,6 @@ public class MealServiceTest {
                 + System.lineSeparator() + builder.toString()
                 + "--------------------------------------------");
     }
-
-    @Autowired
-    private MealService service;
 
     @Test
     public void delete() throws Exception {

@@ -7,7 +7,7 @@ import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.service.AbstractMealServiceTest;
+import ru.javawebinar.topjava.service.MealAbstractServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import static org.junit.Assert.assertThrows;
@@ -15,7 +15,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ActiveProfiles(Profiles.DATAJPA)
-public class MealServiceDataJpaTest extends AbstractMealServiceTest {
+public class DataJpaMealServiceTest extends MealAbstractServiceTest {
 
     @Test
     public void getWithAnotherMeal() {

@@ -20,7 +20,7 @@
             </c:otherwise>
         </c:choose>
     </h2>
-    <form method="post" action="${pageContext.request.contextPath}/meals">
+    <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.date"/></dt>

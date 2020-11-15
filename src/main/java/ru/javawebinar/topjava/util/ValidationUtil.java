@@ -3,6 +3,9 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.validation.*;
+import java.util.Set;
+
 public class ValidationUtil {
     private ValidationUtil() {
     }
@@ -51,5 +54,15 @@ public class ValidationUtil {
             result = cause;
         }
         return result;
+    }
+
+    public static void validate(AbstractBaseEntity entity) {
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+
+        Set<ConstraintViolation<AbstractBaseEntity>> violations = validator.validate(entity);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
     }
 }

@@ -11,14 +11,7 @@
     <hr>
     <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
     <h2>
-        <c:choose>
-            <c:when test="${meal.id== null}">
-                <spring:message code="meal.addMeal"/>
-            </c:when>
-            <c:otherwise>
-                <spring:message code="meal.edit"/>
-            </c:otherwise>
-        </c:choose>
+        <spring:message code="${meal.isNew() ? 'meal.addMeal' : 'meal.edit'}"/>
     </h2>
     <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">

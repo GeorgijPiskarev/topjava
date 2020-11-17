@@ -7,6 +7,9 @@ import javax.validation.*;
 import java.util.Set;
 
 public class ValidationUtil {
+
+    private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     private ValidationUtil() {
     }
 
@@ -57,9 +60,6 @@ public class ValidationUtil {
     }
 
     public static void validate(AbstractBaseEntity entity) {
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        Validator validator = validatorFactory.getValidator();
-
         Set<ConstraintViolation<AbstractBaseEntity>> violations = validator.validate(entity);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);

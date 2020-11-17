@@ -17,7 +17,10 @@ import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.validate;
 
@@ -40,11 +43,12 @@ public class JdbcUserRepository implements UserRepository {
             Integer id = resultSet.getInt("id");
             User user = userMap.get(id);
             if (user == null) {
-                userMap.put(id, ROW_MAPPER.mapRow(resultSet, resultSet.getRow()));
+                user = ROW_MAPPER.mapRow(resultSet, resultSet.getRow());
+                userMap.put(id, user);
             }
-            if (resultSet.getString("roles") != null && user != null) {
-                Role role = Enum.valueOf(Role.class, resultSet.getString("roles"));
-                user.getRoles().add(role);
+            String role = resultSet.getString("roles");
+            if (role != null && user != null) {
+                user.getRoles().add(Role.valueOf(role));
             }
         }
         return new ArrayList<>(userMap.values());
@@ -114,21 +118,20 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private void addRoles(User user) {
-        Set<Role> roleSet = user.getRoles();
-        if (roleSet != null) {
+        List<Role> roles = new ArrayList<>(user.getRoles());
+        if (!roles.isEmpty())
             jdbcTemplate.batchUpdate("INSERT INTO user_roles(user_id,role ) VALUES (?,?)", new BatchPreparedStatementSetter() {
                 @Override
                 public void setValues(PreparedStatement ps, int i) throws SQLException {
                     ps.setInt(1, user.getId());
-                    ps.setString(2, String.valueOf(roleSet.iterator().next()));
+                    ps.setString(2, roles.get(i).name());
                 }
 
                 @Override
                 public int getBatchSize() {
-                    return roleSet.size();
+                    return roles.size();
                 }
             });
-        }
     }
 
     private void deleteRoles(User user) {

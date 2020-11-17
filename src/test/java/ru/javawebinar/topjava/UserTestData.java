@@ -3,8 +3,7 @@ package ru.javawebinar.topjava;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
@@ -31,5 +30,15 @@ public class UserTestData {
         updated.setEnabled(false);
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
+    }
+
+    public static User getWithSecondRole() {
+        User updated = new User(user);
+        updated.setRoles(List.of(Role.ADMIN, Role.USER));
+        return updated;
+    }
+
+    public static User getWithoutRoles() {
+        return new User(null,"User2","user2@mail.ru","user2",1200,false,new Date(),null);
     }
 }

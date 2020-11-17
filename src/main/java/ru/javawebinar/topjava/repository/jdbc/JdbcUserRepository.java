@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -15,12 +14,7 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.validate;
 
@@ -28,13 +22,13 @@ import static ru.javawebinar.topjava.util.ValidationUtil.validate;
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
 
+    private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
+
     private final JdbcTemplate jdbcTemplate;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final SimpleJdbcInsert insertUser;
-
-    private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
     private final ResultSetExtractor<List<User>> resultSetExtractor = resultSet ->
     {
@@ -47,7 +41,7 @@ public class JdbcUserRepository implements UserRepository {
                 userMap.put(id, user);
             }
             String role = resultSet.getString("roles");
-            if (role != null && user != null) {
+            if (role != null) {
                 user.getRoles().add(Role.valueOf(role));
             }
         }
@@ -118,20 +112,12 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private void addRoles(User user) {
-        List<Role> roles = new ArrayList<>(user.getRoles());
-        if (!roles.isEmpty())
-            jdbcTemplate.batchUpdate("INSERT INTO user_roles(user_id,role ) VALUES (?,?)", new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setInt(1, user.getId());
-                    ps.setString(2, roles.get(i).name());
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return roles.size();
-                }
-            });
+        if (user.getRoles() != null && !user.getRoles().isEmpty())
+            jdbcTemplate.batchUpdate("INSERT INTO user_roles(user_id,role ) VALUES (?,?)", user.getRoles(), user.getRoles().size(),
+                    (ps, role) -> {
+                        ps.setInt(1, user.getId());
+                        ps.setString(2, role.name());
+                    });
     }
 
     private void deleteRoles(User user) {

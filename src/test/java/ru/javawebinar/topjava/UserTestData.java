@@ -39,6 +39,6 @@ public class UserTestData {
     }
 
     public static User getWithoutRoles() {
-        return new User(null,"User2","user2@mail.ru","user2",1200,false,new Date(),null);
+        return new User(null, "User2", "user2@mail.ru", "user2", 1200, false, new Date(), null);
     }
 }

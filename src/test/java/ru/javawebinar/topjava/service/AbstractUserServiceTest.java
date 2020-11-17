@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.JpaUtil;
@@ -37,6 +38,10 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         if (!isJdbs()) {
             jpaUtil.clear2ndLevelHibernateCache();
         }
+    }
+
+    public boolean isJdbs() {
+        return List.of(environment.getActiveProfiles()).contains(Profiles.JDBC);
     }
 
     @Test
@@ -97,14 +102,14 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void addSecondRole(){
+    public void addSecondRole() {
         User user = getWithSecondRole();
         service.update(user);
-        USER_MATCHER.assertMatch(service.get(USER_ID),getWithSecondRole());
+        USER_MATCHER.assertMatch(service.get(USER_ID), getWithSecondRole());
     }
 
     @Test
-    public void createWithoutRoles(){
+    public void createWithoutRoles() {
         User created = service.create(getWithoutRoles());
         int newId = created.id();
         User newUser = getWithoutRoles();

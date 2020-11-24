@@ -9,7 +9,7 @@ curl --location --request POST 'http://localhost:8080/topjava/rest/meals' \
 --data-raw '{
     "id": null,
     "dateTime": "2020-02-01T18:00:00",
-    "description": "Созданный ужин",
+    "description": "Created dinner",
     "calories": 300,
     "user": null
 }'

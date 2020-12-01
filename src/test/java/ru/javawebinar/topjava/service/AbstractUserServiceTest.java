@@ -1,9 +1,9 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.util.Assert;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -77,6 +77,14 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     void getAll() {
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, admin, user);
+    }
+
+    @Test
+    void enabled() {
+        User user = service.get(USER_ID);
+        service.enabled(USER_ID, false);
+        Assertions.assertTrue(user.isEnabled());
+        Assertions.assertFalse(service.get(USER_ID).isEnabled());
     }
 
     @Test

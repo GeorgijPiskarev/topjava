@@ -4,25 +4,19 @@ var ctx;
 $(function () {
     // https://stackoverflow.com/a/5064235/548473
     ctx = {
-        ajaxUrl: "admin/users/",
+        ajaxUrl: "ajax/meals/",
         datatableApi: $("#datatable").DataTable({
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "name"
+                    "data": "dateTime"
                 },
                 {
-                    "data": "email"
+                    "data": "description"
                 },
                 {
-                    "data": "roles"
-                },
-                {
-                    "data": "enabled"
-                },
-                {
-                    "data": "registered"
+                    "data": "calories"
                 },
                 {
                     "defaultContent": "Edit",
@@ -39,22 +33,20 @@ $(function () {
                     "asc"
                 ]
             ]
-        })
+        }), updateFilteredTable
     };
     makeEditable();
 });
 
-function enable(checkbox, id) {
-    var enabled = checkbox.is(":checked");
-
+function updateFilteredTable() {
     $.ajax({
-        url: ctx.ajaxUrl + id,
-        type: "POST",
-        data: "enabled=" + enabled
-    }).done(function () {
-        checkbox.closest("tr").attr("data-userEnabled", enabled);
-        successNoty(enabled ? "Пользователь включен" : "Пользователь отключен");
-    }).fail(function () {
-        $(checkbox).prop("checked", !enabled);
-    });
+        type: "GET",
+        url: ctx.ajaxUrl + "filter",
+        data: $("#filter").serialize()
+    }).done(filterTable);
+}
+
+function clearFilter() {
+    $("#filter")[0].reset();
+    $.get(ctx.ajaxUrl, filterTable);
 }

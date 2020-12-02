@@ -39,7 +39,9 @@ $(function () {
                     "asc"
                 ]
             ]
-        })
+        }), updateTable: function () {
+            $.get(ctx.ajaxUrl, update)
+        }
     };
     makeEditable();
 });
@@ -47,11 +49,7 @@ $(function () {
 function enable(checkbox, id) {
     var enabled = checkbox.is(":checked");
 
-    $.ajax({
-        url: ctx.ajaxUrl + id,
-        type: "POST",
-        data: "enabled=" + enabled
-    }).done(function () {
+    $.post(ctx.ajaxUrl + id, "enabled=" + enabled, function () {
         checkbox.closest("tr").attr("data-userEnabled", enabled);
         successNoty(enabled ? "Пользователь включен" : "Пользователь отключен");
     }).fail(function () {

@@ -30,23 +30,19 @@ $(function () {
             "order": [
                 [
                     0,
-                    "asc"
+                    "desc"
                 ]
             ]
-        }), updateFilteredTable
+        }), updateTable: updateFilteredTable
     };
     makeEditable();
 });
 
 function updateFilteredTable() {
-    $.ajax({
-        type: "GET",
-        url: ctx.ajaxUrl + "filter",
-        data: $("#filter").serialize()
-    }).done(filterTable);
+    $.get(ctx.ajaxUrl + "filter", $("#filter").serialize(), update)
 }
 
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get(ctx.ajaxUrl, filterTable);
+    $.get(ctx.ajaxUrl, update);
 }

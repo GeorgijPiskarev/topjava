@@ -1,4 +1,4 @@
-var ctx;
+var ctx, mealAjaxUrl = "profile/meals/";
 
 function updateFilteredTable() {
     $.ajax({
@@ -14,28 +14,41 @@ function clearFilter() {
 }
 
 $(function () {
+    // https://stackoverflow.com/a/5064235/548473
     ctx = {
-        ajaxUrl: "profile/meals/",
+        ajaxUrl: mealAjaxUrl,
         datatableApi: $("#datatable").DataTable({
+            "ajax": {
+                "url": mealAjaxUrl,
+                "dataSrc": ""
+            },
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime"
+                    "data": "dateTime",
+                    "render": function (date, type, row) {
+                        if (type === "display") {
+                            return date.replace('T', ' ').substring(0, 16);
+                        }
+                        return date;
+                    }
                 },
                 {
-                    "data": "description"
+                    "data": "description",
                 },
                 {
                     "data": "calories"
                 },
                 {
-                    "defaultContent": "Edit",
-                    "orderable": false
+                    "orderable": false,
+                    "defaultContent": "",
+                    "render": renderEditBtn
                 },
                 {
-                    "defaultContent": "Delete",
-                    "orderable": false
+                    "orderable": false,
+                    "defaultContent": "",
+                    "render": renderDeleteBtn
                 }
             ],
             "order": [
@@ -43,9 +56,36 @@ $(function () {
                     0,
                     "desc"
                 ]
-            ]
+            ],
+            "createdRow": function (row, data) {
+                $(row).attr("data-mealExcess", data.excess);
+            }
         }),
         updateTable: updateFilteredTable
     };
     makeEditable();
+});
+
+$('#dateTime').datetimepicker({
+    format: "Y-m-d H:i"
+});
+
+$('#startDate').datetimepicker({
+    timepicker: false,
+    format: 'Y-m-d',
+});
+
+$('#endDate').datetimepicker({
+    timepicker: false,
+    format: 'Y-m-d',
+});
+
+$('#startTime').datetimepicker({
+    datepicker: false,
+    format: 'H:i'
+});
+
+$('#endTime').datetimepicker({
+    datepicker: false,
+    format: 'H:i'
 });

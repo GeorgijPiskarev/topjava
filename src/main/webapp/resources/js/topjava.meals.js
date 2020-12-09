@@ -3,14 +3,14 @@ var ctx, mealAjaxUrl = "profile/meals/";
 function updateFilteredTable() {
     $.ajax({
         type: "GET",
-        url: "profile/meals/filter",
+        url: mealAjaxUrl + "filter",
         data: $("#filter").serialize()
     }).done(updateTableByData);
 }
 
 function clearFilter() {
     $("#filter")[0].reset();
-    $.get("profile/meals/", updateTableByData);
+    $.get(mealAjaxUrl, updateTableByData);
 }
 
 $(function () {
@@ -29,7 +29,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (date, type, row) {
                         if (type === "display") {
-                            return date.replace('T', ' ').substring(0, 16);
+                            return formatDate(date);
                         }
                         return date;
                     }
@@ -66,26 +66,51 @@ $(function () {
     makeEditable();
 });
 
+var startDate = $('#startDate')
+var startTime = $('#startTime')
+var endDate = $('#endDate')
+var endTime = $('#endTime')
+
 $('#dateTime').datetimepicker({
     format: "Y-m-d H:i"
 });
 
-$('#startDate').datetimepicker({
+startDate.datetimepicker({
     timepicker: false,
     format: 'Y-m-d',
+    onShow: function () {
+        this.setOptions({
+            maxDate: endDate.val() ? endDate.val() : false
+        })
+    }
 });
 
-$('#endDate').datetimepicker({
+endDate.datetimepicker({
     timepicker: false,
     format: 'Y-m-d',
+    onShow: function () {
+        this.setOptions({
+            minDate: startDate.val() ? startDate.val() : false
+        })
+    }
 });
 
-$('#startTime').datetimepicker({
+startTime.datetimepicker({
     datepicker: false,
-    format: 'H:i'
+    format: 'H:i',
+    onShow: function () {
+        this.setOptions({
+            maxTime: endTime.val() ? endTime.val() : false
+        })
+    }
 });
 
-$('#endTime').datetimepicker({
+endTime.datetimepicker({
     datepicker: false,
-    format: 'H:i'
+    format: 'H:i',
+    onShow: function () {
+        this.setOptions({
+            minTime: startTime.val() ? startTime.val() : false
+        })
+    }
 });

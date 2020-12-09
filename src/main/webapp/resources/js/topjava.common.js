@@ -21,7 +21,7 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
-            form.find("input[name='" + key + "']").val(key === "dateTime" ? (value.replace('T', ' ').substring(0, 16)) : value);
+            form.find("input[name='" + key + "']").val(key === "dateTime" ? formatDate(value) : value);
         });
         $('#editRow').modal();
     });
@@ -93,4 +93,9 @@ function renderDeleteBtn(data, type, row) {
     if (type === "display") {
         return "<a onclick='deleteRow(" + row.id + ");'><span class='fa fa-remove'></span></a>";
     }
+
+}
+
+function formatDate(date) {
+    return date.replace('T', ' ').substring(0, 16);
 }

@@ -1,7 +1,7 @@
 package ru.javawebinar.topjava.util;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.postgresql.util.PSQLException;
+import org.springframework.validation.BindException;
 import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -78,11 +78,24 @@ public class ValidationUtil {
         return result;
     }
 
-    public static ResponseEntity<String> getErrorResponse(BindingResult result) {
-        return ResponseEntity.unprocessableEntity().body(
-                result.getFieldErrors().stream()
-                        .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                        .collect(Collectors.joining("<br>"))
-        );
+    public static String getRootCauseCustomMessage(Throwable rootCause) {
+        String causeMsg;
+        if (rootCause instanceof PSQLException) {
+            PSQLException psqlException = (PSQLException) rootCause;
+            if ("users_unique_email_idx".equalsIgnoreCase(psqlException.getServerErrorMessage().getConstraint())) {
+                causeMsg = "User with this email already exists";
+            } else if ("meals_unique_user_datetime_idx".equalsIgnoreCase(psqlException.getServerErrorMessage().getConstraint())) {
+                causeMsg = "Meal with this dateTime already exists";
+            } else {
+                causeMsg = rootCause.toString();
+            }
+        } else if (rootCause instanceof BindException) {
+            causeMsg = ((BindException) rootCause).getBindingResult().getFieldErrors().stream()
+                    .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
+                    .collect(Collectors.joining("<br>"));
+        } else {
+            causeMsg = rootCause.toString();
+        }
+        return causeMsg;
     }
 }
